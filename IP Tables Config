@@ -1,0 +1,18 @@
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+
+# --- 1. ALLOW ESTABLISHED & RELATED TRAFFIC ---
+-A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# --- 2. BLACKLIST / THREAT MITIGATION ---
+-A FORWARD -s 172.16.1.200 -j DROP
+
+# --- 3. LAN TO DMZ & WAN ACCESS ---
+-A FORWARD -i eth1 -s 10.1.1.0/24 -j ACCEPT
+
+# --- 4. WAN TO DMZ ACCESS ---
+-A FORWARD -i eth3 -s 172.16.1.0/24 -d 192.168.10.10 -p tcp -m multiport --dports 80,443 -j ACCEPT
+
+COMMIT
